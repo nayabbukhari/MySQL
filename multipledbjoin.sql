@@ -1,9 +1,19 @@
----------Working with Multiple databases - JOIN TABLE | Enquirer Duration specific list--------------------
 SELECT 
 DISTINCT per.autogenId, 
-CONCAT_WS(' ', per.firstName, per.lastName) as fullName, 
+CONCAT_WS(' ', per.firstName, per.lastName) as FullName, 
 per.email,
 per.mainContactNo,
+CONCAT(
+		IFNULL(per.address,''),' ', 
+    	IFNULL(CAST(per.propertyName AS CHAR CHARACTER SET utf8),''),' ',	
+    	IFNULL(CAST(per.flatUnit AS CHAR CHARACTER SET utf8),''),' ',	
+		IFNULL(CAST(per.streetNumber AS CHAR CHARACTER SET utf8),''),' ',	
+    	IFNULL(CAST(per.streetName AS CHAR CHARACTER SET utf8),''),' ',
+		IFNULL(per.suburbTown,''),' ',
+		IFNULL(per.stateCity,''),' ',
+		IFNULL(per.postcode,''),' ',
+		IFNULL(per.country,''),' '
+		) AS 'Address',
 per.specialNote,
 cn.Reason,
 pc.enquiredDate, 
@@ -19,7 +29,10 @@ pc.courseId, co.code as courseCode, pc.actioned, pc.sent,
 					  WHEN 7 THEN 'Smart and Skilled'
 					  WHEN 8 THEN 'Other'
 				END) AS 'Referral',
-(SELECT CASE COUNT(enr.enrolmentId) WHEN 0 THEN 'No' ELSE 'Yes' END FROM rto_enrolment enr
+(SELECT CASE COUNT(enr.enrolmentId) 
+					  WHEN 0 THEN 'No' 
+					  ELSE 'Yes' 
+				END FROM rto_enrolment enr
 WHERE enr.personId = per.id) AS enrolled
 FROM db1.rto_person per 
 LEFT JOIN db1.rto_persons_courses pc 
@@ -36,4 +49,4 @@ AND per.published = 1
 AND pc.enquiredDate >= '2022-01-01'
 AND pc.enquiredDate <= '2022-08-12'
 ORDER BY pc.enquiredDate ASC, co.code ASC
--- limit 13300
+limit 8300
